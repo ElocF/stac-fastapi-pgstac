@@ -8,9 +8,9 @@ services:
       - APP_PORT=8082
       - RELOAD=true
       - ENVIRONMENT=local
-      - POSTGRES_USER=username
-      - POSTGRES_PASS=password
-      - POSTGRES_DBNAME=postgis
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASS=${POSTGRES_PASSWORD}
+      - POSTGRES_DBNAME=${POSTGRES_DB}
       - POSTGRES_HOST_READER=database
       - POSTGRES_HOST_WRITER=database
       - POSTGRES_PORT=5432
@@ -46,33 +46,33 @@ services:
     container_name: stac-db
     image: ghcr.io/stac-utils/pgstac:v0.8.5
     environment:
-      - POSTGRES_USER=username
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=postgis
-      - PGUSER=username
-      - PGPASSWORD=password
-      - PGDATABASE=postgis
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - PGUSER=${POSTGRES_USER}
+      - PGPASSWORD=${POSTGRES_PASSWORD}
+      - PGDATABASE=${POSTGRES_DB}
     ports:
       - "5439:5432"
     command: postgres -N 500
 
   # Load joplin demo dataset into the PGStac Application
-  loadjoplin:
-    image: stac-utils/stac-fastapi-pgstac
-    environment:
-      - ENVIRONMENT=development
-    volumes:
-      - ./stac_fastapi:/app/stac_fastapi
-      - ./scripts:/app/scripts
-    command: >
-      /bin/sh -c "
-        ./scripts/wait-for-it.sh -t 60 app:8082 &&
-        python -m pip install requests &&
-        python /app/scripts/ingest_joplin.py http://app:8082
-        "
-    depends_on:
-      - database
-      - app
+  # loadjoplin:
+  #   image: stac-utils/stac-fastapi-pgstac
+  #   environment:
+  #     - ENVIRONMENT=development
+  #   volumes:
+  #     - ./stac_fastapi:/app/stac_fastapi
+  #     - ./scripts:/app/scripts
+  #   command: >
+  #     /bin/sh -c "
+  #       ./scripts/wait-for-it.sh -t 60 app:8082 &&
+  #       python -m pip install requests &&
+  #       python /app/scripts/ingest_joplin.py http://app:8082
+  #       "
+  #   depends_on:
+  #     - database
+  #     - app
 
 networks:
   default:
